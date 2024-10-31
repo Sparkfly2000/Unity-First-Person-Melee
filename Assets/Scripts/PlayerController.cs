@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,6 +12,11 @@ public class PlayerController : MonoBehaviour
     CharacterController controller;
     Animator animator;
     AudioSource audioSource;
+    public int kills = 0;
+    public TMP_Text killCount;
+    public int health = 10;
+    public TMP_Text healthPoints;
+    public GameObject damageOverlay;
 
     [Header("Controller")]
     public float moveSpeed = 5;
@@ -28,7 +34,9 @@ public class PlayerController : MonoBehaviour
     float xRotation = 0f;
 
     void Awake()
-    { 
+    {
+        damageOverlay.SetActive(false);
+
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         audioSource = GetComponent<AudioSource>();
@@ -141,7 +149,7 @@ public class PlayerController : MonoBehaviour
     // ------------------- //
 
     [Header("Attacking")]
-    public float attackDistance = 3f;
+    public float attackDistance = 1f;
     public float attackDelay = 0.4f;
     public float attackSpeed = 1f;
     public int attackDamage = 1;
@@ -204,5 +212,21 @@ public class PlayerController : MonoBehaviour
 
         GameObject GO = Instantiate(hitEffect, pos, Quaternion.identity);
         Destroy(GO, 20);
+    }
+
+    public void UILoad()
+    {
+        killCount.text = "Kills: " + kills;
+        healthPoints.text = (health * 10).ToString();
+    }
+
+    public void Overlay()
+    {
+        Invoke("DismissOverlay", 0.1f);
+    }
+
+    void DismissOverlay()
+    {
+        damageOverlay.SetActive(false);
     }
 }
