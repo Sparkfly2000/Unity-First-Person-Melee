@@ -18,7 +18,8 @@ public class Actor : MonoBehaviour
         GameObject player = GameObject.Find("Player");
         PlayerController playerController = player.GetComponent<PlayerController>();
         currentHealth -= amount;
-
+        playerController.audioSource.clip = playerController.batScreech;
+        playerController.audioSource.Play();
         if(currentHealth <= 0)
         { 
             playerController.kills += 1;
@@ -36,6 +37,8 @@ public class Actor : MonoBehaviour
         {
             biteActive = false;
             playerController.health -= 1;
+            playerController.audioSource.clip = playerController.biteSound;
+            playerController.audioSource.Play();
             playerController.damageOverlay.SetActive(true);
             playerController.UILoad();
             playerController.Overlay();

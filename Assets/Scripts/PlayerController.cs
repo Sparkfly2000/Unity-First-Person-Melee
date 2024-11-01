@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,12 +12,14 @@ public class PlayerController : MonoBehaviour
 
     CharacterController controller;
     Animator animator;
-    AudioSource audioSource;
+    public AudioSource audioSource;
     public int kills = 0;
     public TMP_Text killCount;
     public int health = 10;
     public TMP_Text healthPoints;
     public GameObject damageOverlay;
+    public AudioClip biteSound, deathSound, batScreech;
+    public GameObject deathScreen, winScreen;
 
     [Header("Controller")]
     public float moveSpeed = 5;
@@ -49,6 +52,12 @@ public class PlayerController : MonoBehaviour
         Cursor.visible = false;
     }
 
+    private void Start()
+    {
+        deathScreen.SetActive(false);
+        winScreen.SetActive(false);
+    }
+
     void Update()
     {
         isGrounded = controller.isGrounded;
@@ -57,7 +66,26 @@ public class PlayerController : MonoBehaviour
         if(input.Attack.IsPressed())
         { Attack(); }
 
+        if (kills == 50)
+        {
+            winScreen.SetActive(true);
+        }
+
         SetAnimations();
+        if (health < 1)
+        {
+            audioSource.clip = deathSound;
+            audioSource.Play();
+            deathScreen.SetActive(true);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            Invoke("RestartGame", 3f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
     }
 
     void FixedUpdate() 
@@ -228,5 +256,10 @@ public class PlayerController : MonoBehaviour
     void DismissOverlay()
     {
         damageOverlay.SetActive(false);
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
